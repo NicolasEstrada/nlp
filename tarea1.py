@@ -25,3 +25,5 @@ for year in years:
             print "Title: ", doc[0]
             print "Authors: ", doc[1]
             print "Year: 20" + year
+
+# TODO: Insert data into MySql local Database.

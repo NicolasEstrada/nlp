@@ -8,6 +8,7 @@ __version__ = "0.1"
 #import MySQLdb
 
 from helpers import document_wrapper
+from helpers import insert_into_mysql
 
 years = ["01", "02", "03", "04", "05", "06",
 "07", "08", "09", "10", "11", "12"]
@@ -18,12 +19,18 @@ years = ["01", "02", "03", "04", "05", "06",
 
 # idx folder relative path
 idx_path = "nipstxt/idx/"
+columns = ["ID", "title", "year", "authors"]
 
 for year in years:
+    rows = []
     with open(idx_path + "c" + year + ".txt", "r") as fo:
         for doc in document_wrapper(fo.read().split('\n')):
-            print "Title: ", doc[0]
-            print "Authors: ", doc[1]
-            print "Year: 20" + year
+            insert_into_mysql(
+                'Document',
+                columns,
+                [(int(doc[2]), doc[0], 2000 + int(year), doc[1])])
 
-# TODO: Insert data into MySql local Database.
+            # print "Title: ", doc[0]
+            # print "Authors: ", doc[1]
+            # print "Year: 20" + year
+            # print "ID: " + doc[2]

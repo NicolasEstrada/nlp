@@ -47,7 +47,7 @@ def get_abstract(input_file):
                     tmp_str = input_file.split(i)[0]
                     return tmp_str
 
-    print "[Abstract]: No intrdcution/abstract tags found."
+    print "[Abstract]: No intro/abs tags found."
     return None
 
 
@@ -85,6 +85,18 @@ def year_to_str(year):
 def get_str_id(id):
     """This function return the id with corresponding leading zeros."""
     return str(id).zfill(4)
+
+
+def get_collocations(tokens, n_collocations=None):
+    """This functions returns the collocations for a given set of tokens"""
+    from nltk.collocations import BigramAssocMeasures, BigramCollocationFinder
+
+    bigram_measures = BigramAssocMeasures()
+    finder = BigramCollocationFinder.from_words(tokens)
+    scored = finder.score_ngrams(bigram_measures.raw_freq)
+    colls = sorted(bigram for bigram, score in scored)[:100]
+    # colls = finder.nbest(bigram_measures.pmi, n_collocations)
+    return colls
 
 
 # Database class

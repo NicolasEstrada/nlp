@@ -41,10 +41,9 @@ def get_abstract(input_file):
     for a in abstracts:
         if a in input_file:
             tmp_str = input_file.split(a)[1]
-
             for i in intros:
-                if i in input_file:
-                    tmp_str = input_file.split(i)[0]
+                if i in tmp_str:
+                    tmp_str = tmp_str.split(i)[0]
                     return tmp_str
 
     print "[Abstract]: No intro/abs tags found."

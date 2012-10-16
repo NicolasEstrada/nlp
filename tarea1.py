@@ -26,19 +26,22 @@ coll_columns = ["ID", "year", "collocation"]
 
 
 def fetch_docs():
+    db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
+
     for year in years:
+        rows = []
         with open(idx_path + "c" + year + ".txt", "r") as fo:
             for doc in document_wrapper(fo.read().split('\n')):
-                db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
-                db.insert_into_mysql(
-                    'Document',
-                    doc_columns,
-                    [(int(doc[2]), doc[0], 2000 + int(year), doc[1])])
-
+                rows.append((int(doc[2]), doc[0], 2000 + int(year), doc[1]))
                 # print "Title: ", doc[0]
                 # print "Authors: ", doc[1]
                 # print "Year: 20" + year
                 # print "ID: " + doc[2]
+
+        db.insert_into_mysql(
+                    'Document',
+                    doc_columns,
+                    rows)
 
 
 def fetch_abstracts():
@@ -46,6 +49,7 @@ def fetch_abstracts():
     db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
     results = db.query("SELECT ID, year FROM Document ORDER BY year;")
 
+    rows = []
     for result in results:
         did = result[0]  # Document ID.
         y = result[1]  # Document Year.
@@ -53,7 +57,7 @@ def fetch_abstracts():
             + "/" + get_str_id(did) + ".txt", "r")
 
         with fobj as fo:
-            print "[Abstract]: ", did, y
+            # print "[Abstract]: ", did, y
             abstract = get_abstract(fo.read())
 
         if abstract:
@@ -67,11 +71,12 @@ def fetch_abstracts():
             #     except UnicodeDecodeError:
             #         print "[Abstract] Can't decode ", did, y
             #         decoded_abs.append(w)
+            rows.append((did, y, " ".join(cls_abs)))
 
-            db.insert_into_mysql(
+    db.insert_into_mysql(
                 'Abstract',
                 abs_columns,
-                [(did, y, " ".join(cls_abs))])
+                rows)
 
 
 def fetch_collocations():
@@ -79,6 +84,7 @@ def fetch_collocations():
     db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
 
     for year in years:
+        rows = []
         results = db.query(
             "SELECT ID, abstract FROM Abstract WHERE year = 20" + year)
 
@@ -90,11 +96,13 @@ def fetch_collocations():
 
         for r in results:
             colls_to_insert = [c[0] + " " + c[1] for c in top_colls if c[0] + " " + c[1] in r[1]]
+            for col in colls_to_insert:
+                rows.append((r[0], 2000 + int(year), col))
 
-            db.insert_into_mysql(
+        db.insert_into_mysql(
                 'Collocation',
                 coll_columns,
-                [(r[0], 2000 + int(year), ",".join(colls_to_insert))])
+                rows)
 
 
 if __name__ == "__main__":

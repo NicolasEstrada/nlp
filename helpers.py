@@ -46,7 +46,7 @@ def get_abstract(input_file):
                     tmp_str = tmp_str.split(i)[0]
                     return tmp_str
 
-    print "[Abstract]: No intro/abs tags found."
+    # print "[Abstract]: No intro/abs tags found."
     return None
 
 

@@ -18,5 +18,5 @@ CREATE TABLE Collocation(
 # Index for tables.
  alter table Document add unique index (ID, year);
  alter table Abstract add unique index (ID, year);
- alter table Collocation add unique index (ID, year);
+ -- alter table Collocation add unique index (ID, year);
 

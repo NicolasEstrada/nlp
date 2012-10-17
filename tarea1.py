@@ -24,19 +24,17 @@ doc_columns = ["ID", "title", "year", "authors"]
 abs_columns = ["ID", "year", "abstract"]
 coll_columns = ["ID", "year", "collocation"]
 
+# Stablish database connection
+db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
+
 
 def fetch_docs():
-    db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
-
+    # Fetch doc headers for each year
     for year in years:
         rows = []
         with open(idx_path + "c" + year + ".txt", "r") as fo:
             for doc in document_wrapper(fo.read().split('\n')):
                 rows.append((int(doc[2]), doc[0], 2000 + int(year), doc[1]))
-                # print "Title: ", doc[0]
-                # print "Authors: ", doc[1]
-                # print "Year: 20" + year
-                # print "ID: " + doc[2]
 
         db.insert_into_mysql(
                     'Document',
@@ -46,7 +44,6 @@ def fetch_docs():
 
 def fetch_abstracts():
     # First we need the Id and year of each document.
-    db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
     results = db.query("SELECT ID, year FROM Document ORDER BY year;")
 
     rows = []
@@ -57,20 +54,13 @@ def fetch_abstracts():
             + "/" + get_str_id(did) + ".txt", "r")
 
         with fobj as fo:
-            # print "[Abstract]: ", did, y
             abstract = get_abstract(fo.read())
 
         if abstract:
             text = remove_punctuation(abstract.lower())
             tokens = tokenize(text)
             cls_abs = remove_stopwords(tokens)
-            # decoded_abs = []
-            # for w in cls_abs:
-            #     try:
-            #         decoded_abs.append(w.decode('utf8'))
-            #     except UnicodeDecodeError:
-            #         print "[Abstract] Can't decode ", did, y
-            #         decoded_abs.append(w)
+
             rows.append((did, y, " ".join(cls_abs)))
 
     db.insert_into_mysql(
@@ -81,8 +71,6 @@ def fetch_abstracts():
 
 def fetch_collocations():
     # First we need fectch all the abstracts for each year.
-    db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
-
     for year in years:
         rows = []
         results = db.query(
@@ -107,8 +95,11 @@ def fetch_collocations():
 
 if __name__ == "__main__":
     # Step 1
-    # fetch_docs()
+    print "[Step 1] Fetching documents headers..."
+    fetch_docs()
     # Step 2
-    # fetch_abstracts()
+    print "[Step 2] Fetching and processing abstracts..."
+    fetch_abstracts()
     # Step 3
+    print "[Step 3] Calculating the collocations..."
     fetch_collocations()

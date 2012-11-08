@@ -1,14 +1,14 @@
 # SQL script to create the tables.
 CREATE TABLE Document (
 	ID INTEGER,
-	title VARCHAR(255),
-	authors VARCHAR(255),
+	title TEXT,
+	authors TEXT,
 	year INTEGER);
 
 CREATE TABLE Abstract (
 	ID INTEGER,
 	year INTEGER,
-	abstract VARCHAR(255));
+	abstract TEXT);
 
 CREATE TABLE Collocation(
 	ID INTEGER,

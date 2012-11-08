@@ -126,7 +126,7 @@ class mysql_db(object):
                 host=self.host,
                 port=self.port,
                 user=self.username,
-                charset="utf8",
+                charset="latin1",
                 use_unicode="True")
             # Setting autocommit True for InnoDB transactions
             self.db_connection.autocommit(True)

@@ -10,7 +10,7 @@ from helpers import (document_wrapper, mysql_db, year_to_str, get_abstract,
     get_str_id, remove_stopwords, tokenize, remove_punctuation,
     get_collocations)
 
-years = ["01", "02", "03", "04", "05", "06",
+years = ["00", "01", "02", "03", "04", "05", "06",
 "07", "08", "09", "10", "11", "12"]
 
 # Fill the Document table using the cx files
@@ -57,6 +57,8 @@ def fetch_abstracts():
             abstract = get_abstract(fo.read())
 
         if abstract:
+            # Remove the end line  cut words
+            abstract = abstract.replace("- \n", '')
             text = remove_punctuation(abstract.lower())
             tokens = tokenize(text)
             cls_abs = remove_stopwords(tokens)

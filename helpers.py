@@ -201,3 +201,45 @@ class mysql_db(object):
         finally:
             if self.db_connection:
                 self.disconnect()
+
+# Keywords
+
+
+def clean(string, characters):
+    for char in characters:
+        string.replace(char, '')
+
+    print repr(string)
+    return string
+
+
+def split_index(line):
+    counter = 0
+
+    for c in line:
+        counter += 1
+        try:
+            if isinstance(int(c), int):
+                return counter
+        except ValueError:
+            pass
+
+
+def keyword_wrapper(input_file, year):
+    """ This function returns a generator for
+    each document on the input file.
+    """
+
+    for line in input_file:
+        index = split_index(line)
+        keyword = line[:index]
+        ids = line[index:].split(',')
+        print ids
+
+        for key_id in ids:
+            yield (int(clean(key_id, [" ", "\n", "\t"])), year, keyword)
+
+# Example document keyword
+"""
+Simulated annealing 91,149,594,602
+"""

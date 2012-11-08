@@ -1,19 +1,45 @@
 # SQL script to create the tables.
-CREATE TABLE Document (
+CREATE TABLE IF NOT EXISTS Document (
 	ID INTEGER,
 	title TEXT,
 	authors TEXT,
 	year INTEGER);
 
-CREATE TABLE Abstract (
+CREATE TABLE IF NOT EXISTS Abstract (
 	ID INTEGER,
 	year INTEGER,
 	abstract TEXT);
 
-CREATE TABLE Collocation(
+CREATE TABLE IF NOT EXISTS Collocation(
 	ID INTEGER,
 	year INTEGER,
 	collocation VARCHAR(64));
+
+CREATE TABLE IF NOT EXISTS Keyword(
+	keyword VARCHAR(32),
+	year INT,
+	ni INT);
+
+CREATE TABLE IF NOT EXISTS Keyword_Doc(
+	ID INT,
+	year INT,
+	keyword VARCHAR(32));
+
+CREATE TABLE IF NOT EXISTS Nouns(
+	keyword VARCHAR(32),
+	year INT,
+	ni INT,
+	tag VARCHAR(32));
+
+CREATE TABLE IF NOT EXISTS Nouns_Doc(
+	ID INT,
+	year INT,
+	keyword VARCHAR(32));
+
+CREATE TABLE IF NOT EXISTS Collocation_ni(
+	collocation VARCHAR(64)
+	year INT,
+	ni INT);
 
 # Index for tables.
  alter table Document add unique index (ID, year);

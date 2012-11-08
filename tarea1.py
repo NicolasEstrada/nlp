@@ -8,7 +8,7 @@ __version__ = "0.1"
 
 from helpers import (document_wrapper, mysql_db, year_to_str, get_abstract,
     get_str_id, remove_stopwords, tokenize, remove_punctuation,
-    get_collocations)
+    get_collocations, keyword_wrapper)
 
 years = ["00", "01", "02", "03", "04", "05", "06",
 "07", "08", "09", "10", "11", "12"]
@@ -23,6 +23,7 @@ idx_path = base_path + "idx/"
 doc_columns = ["ID", "title", "year", "authors"]
 abs_columns = ["ID", "year", "abstract"]
 coll_columns = ["ID", "year", "collocation"]
+key_columns = ["ID", "year", "keyword"]
 
 # Stablish database connection
 db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
@@ -95,13 +96,35 @@ def fetch_collocations():
                 rows)
 
 
+def fetch_keywords():
+    # Fetch keywords for each each year
+    for year in years:
+        rows = []
+        try:
+            with open(idx_path + "s" + year + ".txt", "r") as fo:
+                for kword in keyword_wrapper(fo.read().split('\n'),
+                    2000 + int(year)):
+
+                    rows.append(kword)
+
+            db.insert_into_mysql(
+                        'Keyword_Doc',
+                        key_columns,
+                        rows)
+        except IOError:
+            pass
+
+
 if __name__ == "__main__":
-    # Step 1
-    print "[Step 1] Fetching documents headers..."
-    fetch_docs()
-    # Step 2
-    print "[Step 2] Fetching and processing abstracts..."
-    fetch_abstracts()
-    # Step 3
-    print "[Step 3] Calculating the collocations..."
-    fetch_collocations()
+    # # Step 1
+    # print "[Step 1] Fetching documents headers..."
+    # fetch_docs()
+    # # Step 2
+    # print "[Step 2] Fetching and processing abstracts..."
+    # fetch_abstracts()
+    # # Step 3
+    # print "[Step 3] Calculating the collocations..."
+    # fetch_collocations()
+    # Step 4
+    print "[Step 4] Fetching the keywords..."
+    fetch_keywords()

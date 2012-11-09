@@ -205,39 +205,91 @@ class mysql_db(object):
 # Keywords
 
 
-def clean(string, characters):
-    for char in characters:
-        string.replace(char, '')
+def clean(string, regex):
+    result = regex.search(string)
 
-    print repr(string)
-    return string
+    if result:
+        return result.group(0)
+    else:
+        print string
+        return 0
 
 
 def split_index(line):
     counter = 0
 
     for c in line:
-        counter += 1
         try:
             if isinstance(int(c), int):
                 return counter
         except ValueError:
             pass
+        counter += 1
 
 
 def keyword_wrapper(input_file, year):
     """ This function returns a generator for
     each document on the input file.
     """
-
+    import re
+    regex = re.compile(r'\d{1,4}')
+    keywords_count = {}
+    collos_count = {}
     for line in input_file:
         index = split_index(line)
-        keyword = line[:index]
+        collos = line[:index]
+        collos = collos.replace(", ", " ")
+        collos = collos.replace(",", "")
+        keywords = collos.split(" ")
+        keywords = filter(lambda x: x not in [" ", ""], keywords)
         ids = line[index:].split(',')
-        print ids
+        # print ids
+
+        if collos in collos_count:
+            collos_count[collos] += len(ids)
+        else:
+            collos_count[collos] = len(ids)
 
         for key_id in ids:
-            yield (int(clean(key_id, [" ", "\n", "\t"])), year, keyword)
+            for kw in keywords:
+                yield ("Keyword_Doc", (int(clean(key_id, regex)), year, kw))
+
+                if kw in keywords_count:
+                    keywords_count[kw] += 1
+                else:
+                    keywords_count[kw] = 1
+
+    for key in keywords_count:
+        yield ("Keyword", (keywords_count[key], year, key))
+    for key in collos_count:
+        yield ("Collocation_ni", (collos_count[key], year, key))
+
+
+def collocation_wrapper(input_file, year):
+    """ This function returns a generator for
+    each document on the input file.
+    """
+    # import re
+    # regex = re.compile(r'\d{1,4}')
+    collos_count = {}
+    for line in input_file:
+        index = split_index(line)
+        collos = line[:index]
+        collos = collos.replace(", ", " ")
+        collos = collos.replace(",", "")
+        # collos = collos.split(" ")
+        # collos = filter(lambda x: x not in [" ", ""], collos)
+        ids = line[index:].split(',')
+        # print ids
+
+        if collos in collos_count:
+            collos_count[collos] += len(ids)
+        else:
+            collos_count[collos] = len(ids)
+
+
+    for key in collos_count:
+        yield ("Collocation_ni", (collos_count[key], year, key))
 
 # Example document keyword
 """

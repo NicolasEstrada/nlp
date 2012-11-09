@@ -1,5 +1,5 @@
 # -*- coding: latin-1 -*-
-""" Tarea 1 INF335 - Tecnologías de Bíusqueda en la Web
+""" Tarea 1 (Correcciones) & 2 INF335 - Tecnologías de Búsqueda en la Web
 Universidad Técnica Federico Santa Maria"""
 
 __author__ = "Mati, Nico"
@@ -8,7 +8,7 @@ __version__ = "0.1"
 
 from helpers import (document_wrapper, mysql_db, year_to_str, get_abstract,
     get_str_id, remove_stopwords, tokenize, remove_punctuation,
-    get_collocations, keyword_wrapper)
+    get_collocations, keyword_wrapper, collocation_wrapper)
 
 years = ["00", "01", "02", "03", "04", "05", "06",
 "07", "08", "09", "10", "11", "12"]
@@ -23,7 +23,9 @@ idx_path = base_path + "idx/"
 doc_columns = ["ID", "title", "year", "authors"]
 abs_columns = ["ID", "year", "abstract"]
 coll_columns = ["ID", "year", "collocation"]
-key_columns = ["ID", "year", "keyword"]
+key_doc_columns = ["ID", "year", "keyword"]
+keyword_columns = ["ni", "year", "keyword"]
+collo_ni_columns = ["ni", "year", "collocation"]
 
 # Stablish database connection
 db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
@@ -100,18 +102,53 @@ def fetch_keywords():
     # Fetch keywords for each each year
     for year in years:
         rows = []
+        rows = {"Keyword_Doc": [],
+            "Keyword": [],
+            "Collocation_ni": []}
         try:
             with open(idx_path + "s" + year + ".txt", "r") as fo:
                 for kword in keyword_wrapper(fo.read().split('\n'),
                     2000 + int(year)):
 
-                    rows.append(kword)
+                    rows[kword[0]].append(kword[1])
 
             db.insert_into_mysql(
                         'Keyword_Doc',
-                        key_columns,
-                        rows)
+                        key_doc_columns,
+                        rows["Keyword_Doc"])
+            db.insert_into_mysql(
+                        'Keyword',
+                        keyword_columns,
+                        rows["Keyword"])
+            db.insert_into_mysql(
+                        'Collocation_ni',
+                        collo_ni_columns,
+                        rows["Collocation_ni"])
+
         except IOError:
+            # Missing file i.e s00.txt
+            pass
+
+
+def fetch_collocations_ni():
+    # Fetch keywords for each each year
+    for year in years:
+        rows = []
+        rows = {"Collocation_ni": []}
+        try:
+            with open(idx_path + "s" + year + ".txt", "r") as fo:
+                for kword in collocation_wrapper(fo.read().split('\n'),
+                    2000 + int(year)):
+
+                    rows[kword[0]].append(kword[1])
+
+            db.insert_into_mysql(
+                        'Collocation_ni',
+                        collo_ni_columns,
+                        rows["Collocation_ni"])
+
+        except IOError:
+            # Missing file i.e s00.txt
             pass
 
 
@@ -126,5 +163,8 @@ if __name__ == "__main__":
     # print "[Step 3] Calculating the collocations..."
     # fetch_collocations()
     # Step 4
-    print "[Step 4] Fetching the keywords..."
+    print "[Step 4] Fetching the keywords & collocations ocurrences..."
     fetch_keywords()
+    # Step 5
+    # print "[Step 5] Fetching collocations..."
+    # fetch_collocations_ni()

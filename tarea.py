@@ -13,13 +13,10 @@ from helpers import (document_wrapper, mysql_db, year_to_str, get_abstract,
 years = ["00", "01", "02", "03", "04", "05", "06",
 "07", "08", "09", "10", "11", "12"]
 
-# Fill the Document table using the cx files
-# that contains the document description (year,
-# title and autors)
-
 # idx folder relative path
 base_path = "nipstxt/"
 idx_path = base_path + "idx/"
+voc_path = "voctxt/"
 doc_columns = ["ID", "title", "year", "authors"]
 abs_columns = ["ID", "year", "abstract"]
 coll_columns = ["ID", "year", "collocation"]
@@ -36,6 +33,8 @@ db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
 
 
 def fetch_docs():
+    """Fill the Document table using the cx files that contains the document
+    description (year, title and autors)"""
     # Fetch doc headers for each year
     for year in years:
         rows = []
@@ -232,6 +231,22 @@ def fetch_vocabulary():
                 list(set(post_rows)))
 
 
+def generate_matrix():
+
+    for year in years:
+        posts = db.query(
+            "SELECT keyword, ID FROM Posteo WHERE year = 20" + year)
+
+        vocx = open(voc_path + "voc" + year + ".txt", "w+")
+        with vocx:
+            for post in posts:
+                try:
+                    vocx.write(post[0] + " " + str(post[1]) + "\n")
+                except UnicodeEncodeError:
+                    # Omit weird characters (are few)
+                    pass
+
+
 if __name__ == "__main__":
     # # # Step 1
     # print "[Step 1] Fetching documents headers..."
@@ -252,5 +267,8 @@ if __name__ == "__main__":
     # print "[Step 6] Fetching nouns..."
     # fetch_nouns()
     # Step 7
-    print "[Step 7] Generating Vocabulary..."
-    fetch_vocabulary()
+    # print "[Step 7] Generating Vocabulary..."
+    # fetch_vocabulary()
+    # Step 8
+    print "[Step 8] Generating Matrix..."
+    generate_matrix()

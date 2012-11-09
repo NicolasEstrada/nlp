@@ -234,21 +234,16 @@ def keyword_wrapper(input_file, year):
     import re
     regex = re.compile(r'\d{1,4}')
     keywords_count = {}
-    collos_count = {}
+
     for line in input_file:
         index = split_index(line)
-        collos = line[:index]
-        collos = collos.replace(", ", " ")
-        collos = collos.replace(",", "")
-        keywords = collos.split(" ")
+        keywords = line[:index]
+        keywords = keywords.replace(", ", " ")
+        keywords = keywords.replace(",", "")
+        keywords = keywords.split(" ")
         keywords = filter(lambda x: x not in [" ", ""], keywords)
         ids = line[index:].split(',')
         # print ids
-
-        if collos in collos_count:
-            collos_count[collos] += len(ids)
-        else:
-            collos_count[collos] = len(ids)
 
         for key_id in ids:
             for kw in keywords:
@@ -261,8 +256,6 @@ def keyword_wrapper(input_file, year):
 
     for key in keywords_count:
         yield ("Keyword", (keywords_count[key], year, key))
-    for key in collos_count:
-        yield ("Collocation_ni", (collos_count[key], year, key))
 
 
 def collocation_wrapper(input_file, year):

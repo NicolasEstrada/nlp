@@ -5,7 +5,7 @@ Universidad Técnica Federico Santa Maria"""
 __author__ = "Mati, Nico"
 __version__ = "0.1"
 
-
+import codecs
 from helpers import (document_wrapper, mysql_db, year_to_str, get_abstract,
     get_str_id, remove_stopwords, tokenize, remove_punctuation,
     get_collocations, keyword_wrapper, collocation_wrapper)
@@ -26,6 +26,8 @@ coll_columns = ["ID", "year", "collocation"]
 key_doc_columns = ["ID", "year", "keyword"]
 keyword_columns = ["ni", "year", "keyword"]
 collo_ni_columns = ["ni", "year", "collocation"]
+nouns_columns = ["ni", "year", "tag", "keyword"]
+nouns_doc_columns = ["ID", "year", "keyword"]
 
 # Stablish database connection
 db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
@@ -53,8 +55,11 @@ def fetch_abstracts():
     for result in results:
         did = result[0]  # Document ID.
         y = result[1]  # Document Year.
-        fobj = open(base_path + "nips" + year_to_str(y)
-            + "/" + get_str_id(did) + ".txt", "r")
+        # fobj = open(base_path + "nips" + year_to_str(y)
+        #     + "/" + get_str_id(did) + ".txt", "r")
+
+        fobj = codecs.open(base_path + "nips" + year_to_str(y) +
+            "/" + get_str_id(did) + ".txt", "r", "latin1")
 
         with fobj as fo:
             abstract = get_abstract(fo.read())
@@ -130,41 +135,68 @@ def fetch_keywords():
             pass
 
 
-def fetch_collocations_ni():
-    # Fetch keywords for each each year
+def fetch_nouns():
+    # First we need fectch all the abstracts for each year.
+    from nltk.tag import pos_tag
+    from nltk.tokenize import word_tokenize
+
     for year in years:
-        rows = []
-        rows = {"Collocation_ni": []}
-        try:
-            with open(idx_path + "s" + year + ".txt", "r") as fo:
-                for kword in collocation_wrapper(fo.read().split('\n'),
-                    2000 + int(year)):
 
-                    rows[kword[0]].append(kword[1])
+        nouns_doc = []
+        nouns = []
+        nouns_count = {}
 
-            db.insert_into_mysql(
-                        'Collocation_ni',
-                        collo_ni_columns,
-                        rows["Collocation_ni"])
+        results = db.query(
+            "SELECT ID, abstract FROM Abstract WHERE year = 20" + year)
+        keywords = db.query(
+            "SELECT keyword FROM Keyword WHERE year = 20" + year)
 
-        except IOError:
-            # Missing file i.e s00.txt
-            pass
+        for aid, abstract in results:
+            tokens = word_tokenize(abstract)
+            tags = pos_tag(tokens)
+            tags = filter(lambda x: len(x[0]) > 2, tags)
+            tags = filter(lambda x: x[1] in ["NN", "NNS", "NNP", "NNPS"], tags)
+            tags = filter(lambda x: x[0] not in keywords, tags)
 
+            nouns_columns = ["ni", "year", "tag", "keyword"]
+            nouns_doc_columns = ["ID", "year", "keyword"]
+
+            for tag in tags:
+                nouns_doc.append((aid, 2000 + int(year), tag[0]))
+
+                if tag[0] not in nouns_count:
+                    nouns_count[tag[0]] = {"tag": tag[1], "ni": 1}
+                # elif tag[1] not in nouns_count[tag[0]]:
+                #     nouns_count[tag[0]] = {"tag": tag[1], "ni": 1}
+                else:
+                    nouns_count[tag[0]]["ni"] += 1
+
+        for noun in nouns_count:
+            nouns.append((nouns_count[noun]["ni"], 2000 + int(year), nouns_count[noun]["tag"], noun))
+
+        db.insert_into_mysql(
+                'Nouns',
+                nouns_columns,
+                nouns)
+
+        db.insert_into_mysql(
+                'Nouns_Doc',
+                nouns_doc_columns,
+                nouns_doc)
 
 if __name__ == "__main__":
-    # # Step 1
+    # # # Step 1
     # print "[Step 1] Fetching documents headers..."
     # fetch_docs()
-    # # Step 2
+    # # # Step 2
     # print "[Step 2] Fetching and processing abstracts..."
     # fetch_abstracts()
-    # # Step 3
+    # # # Step 3
     # print "[Step 3] Calculating the collocations..."
     # fetch_collocations()
-    # Step 4
-    print "[Step 4] Fetching the keywords & collocations ocurrences..."
-    fetch_keywords()
+    # # Step 4
+    # print "[Step 4] Fetching the keywords & collocations ocurrences..."
+    # fetch_keywords()
     # Step 5
-    # print "[Step 5] Fetching collocations..."
-    # fetch_collocations_ni()
+    print "[Step 5] Fetching nouns..."
+    fetch_nouns()

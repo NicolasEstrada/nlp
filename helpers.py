@@ -181,7 +181,7 @@ class mysql_db(object):
                 self.disconnect()
 
     def query(self, query):
-        """This function insert into mysql the required rows."""
+        """This function executes the query"""
 
         self.connect()
 

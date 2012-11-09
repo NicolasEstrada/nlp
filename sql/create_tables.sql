@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Nouns_Doc(
 	keyword VARCHAR(32));
 
 CREATE TABLE IF NOT EXISTS Collocation_ni(
-	collocation VARCHAR(64)
+	collocation VARCHAR(64),
 	year INT,
 	ni INT);
 
@@ -46,3 +46,11 @@ CREATE TABLE IF NOT EXISTS Collocation_ni(
  alter table Abstract add unique index (ID, year);
  -- alter table Collocation add unique index (ID, year);
 
+delete from Abstract;
+delete from Collocation;
+delete from Collocation_ni;
+delete from Document;
+delete from Keyword;
+delete from Keyword_Doc;
+delete from Nouns;
+delete from Nouns_Doc;

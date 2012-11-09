@@ -93,7 +93,7 @@ def get_collocations(tokens, n_collocations=None):
     bigram_measures = BigramAssocMeasures()
     finder = BigramCollocationFinder.from_words(tokens)
     scored = finder.score_ngrams(bigram_measures.raw_freq)
-    colls = sorted(bigram for bigram, score in scored)[:100]
+    colls = sorted(bigram for bigram, score in scored)[::-100]
 
     return colls
 

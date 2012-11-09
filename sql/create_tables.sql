@@ -41,6 +41,16 @@ CREATE TABLE IF NOT EXISTS Collocation_ni(
 	year INT,
 	ni INT);
 
+CREATE TABLE IF NOT EXISTS Vocabulario(
+	keyword VARCHAR(32),
+	year INT,
+	ni INT);
+
+CREATE TABLE IF NOT EXISTS Posteo(
+	ID INT,
+	year INT,
+	keyword VARCHAR(32));
+
 # Index for tables.
  alter table Document add unique index (ID, year);
  alter table Abstract add unique index (ID, year);
@@ -54,3 +64,5 @@ delete from Keyword;
 delete from Keyword_Doc;
 delete from Nouns;
 delete from Nouns_Doc;
+delete from Vocabulario;
+delete from Posteo;

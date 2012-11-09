@@ -8,7 +8,7 @@ __version__ = "0.1"
 import codecs
 from helpers import (document_wrapper, mysql_db, year_to_str, get_abstract,
     get_str_id, remove_stopwords, tokenize, remove_punctuation,
-    get_collocations, keyword_wrapper, collocation_wrapper)
+    get_collocations, keyword_wrapper)
 
 years = ["00", "01", "02", "03", "04", "05", "06",
 "07", "08", "09", "10", "11", "12"]
@@ -28,6 +28,8 @@ keyword_columns = ["ni", "year", "keyword"]
 collo_ni_columns = ["ni", "year", "collocation"]
 nouns_columns = ["ni", "year", "tag", "keyword"]
 nouns_doc_columns = ["ID", "year", "keyword"]
+voc_columns = ["ni", "year", "keyword"]
+post_columns = ["ID", "year", "keyword"]
 
 # Stablish database connection
 db = mysql_db('localhost', 3306, 'inf335', 'mestrada', '123456')
@@ -135,6 +137,23 @@ def fetch_keywords():
             pass
 
 
+def fetch_collocations_ni():
+    # First we need fectch all the abstracts for each year.
+    for year in years:
+        rows = []
+        results = db.query(
+            "SELECT COUNT(*), year, collocation FROM Collocation " +
+            "WHERE year = 20" + year + " GROUP BY collocation")
+
+        for result in results:
+            rows.append((result[0], result[1], result[2]))
+
+        db.insert_into_mysql(
+                'Collocation_ni',
+                collo_ni_columns,
+                rows)
+
+
 def fetch_nouns():
     # First we need fectch all the abstracts for each year.
     from nltk.tag import pos_tag
@@ -166,8 +185,6 @@ def fetch_nouns():
 
                 if tag[0] not in nouns_count:
                     nouns_count[tag[0]] = {"tag": tag[1], "ni": 1}
-                # elif tag[1] not in nouns_count[tag[0]]:
-                #     nouns_count[tag[0]] = {"tag": tag[1], "ni": 1}
                 else:
                     nouns_count[tag[0]]["ni"] += 1
 
@@ -184,6 +201,37 @@ def fetch_nouns():
                 nouns_doc_columns,
                 nouns_doc)
 
+
+def fetch_vocabulary():
+
+    for year in years:
+
+        nouns = db.query(
+            "SELECT ni, Nouns.keyword, Nouns_Doc.ID FROM Nouns JOIN Nouns_Doc ON Nouns.keyword = Nouns_Doc.keyword  WHERE ni > 1 AND Nouns.year = 20" + year)
+        keywords = db.query(
+            "SELECT ni, Keyword.keyword, Keyword_Doc.ID FROM Keyword JOIN Keyword_Doc ON Keyword.keyword = Keyword_Doc.keyword  WHERE ni > 1 AND Keyword.year = 20" + year)
+
+        voc_rows = []
+        post_rows = []
+
+        for noun in nouns:
+            voc_rows.append((noun[0], 2000 + int(year), noun[1]))
+            post_rows.append((noun[2], 2000 + int(year), noun[1]))
+        for key in keywords:
+            voc_rows.append((key[0], 2000 + int(year), key[1]))
+            post_rows.append((key[2], 2000 + int(year), key[1]))
+
+        db.insert_into_mysql(
+                'Vocabulario',
+                voc_columns,
+                list(set(voc_rows)))
+
+        db.insert_into_mysql(
+                'Posteo',
+                post_columns,
+                list(set(post_rows)))
+
+
 if __name__ == "__main__":
     # # # Step 1
     # print "[Step 1] Fetching documents headers..."
@@ -195,8 +243,14 @@ if __name__ == "__main__":
     # print "[Step 3] Calculating the collocations..."
     # fetch_collocations()
     # # Step 4
-    # print "[Step 4] Fetching the keywords & collocations ocurrences..."
+    # print "[Step 4] Fetching the keywords..."
     # fetch_keywords()
     # Step 5
-    print "[Step 5] Fetching nouns..."
-    fetch_nouns()
+    # print "[Step 5] Fetching collocation ocurrences..."
+    # fetch_collocations_ni()
+    # Step 6
+    # print "[Step 6] Fetching nouns..."
+    # fetch_nouns()
+    # Step 7
+    print "[Step 7] Generating Vocabulary..."
+    fetch_vocabulary()

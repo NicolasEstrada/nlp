@@ -57,9 +57,6 @@ def fetch_abstracts():
     for result in results:
         did = result[0]  # Document ID.
         y = result[1]  # Document Year.
-        # fobj = open(base_path + "nips" + year_to_str(y)
-        #     + "/" + get_str_id(did) + ".txt", "r")
-
         fobj = codecs.open(base_path + "nips" + year_to_str(y) +
             "/" + get_str_id(did) + ".txt", "r", "latin1")
 
@@ -298,42 +295,37 @@ def generate_matrix():
         nipsx = open(nips_path + "nips" + year + ".mat", "w+")
 
         with nipsx:
-            # for doc in docs:
-            #     current_terms = filter(lambda x: x[1] == doc, entries)
-            #     for term in terms:
-            #         nipsx.write("1," if term in current_terms else "0,")
-
-            for x in xrange(0, n_terms):
-                for y in xrange(0, n_docs):
-                    nipsx.write(str(matrix[y][x]) + ",")
+            for x in xrange(0, n_docs):
+                for y in xrange(0, n_terms):
+                    nipsx.write(str(matrix[x][y]) + ",")
                 nipsx.write("\n")
 
 
 if __name__ == "__main__":
-    # # # Step 1
-    # print "[Step 1] Fetching documents headers..."
-    # fetch_docs()
-    # # # Step 2
-    # print "[Step 2] Fetching and processing abstracts..."
-    # fetch_abstracts()
-    # # # Step 3
-    # print "[Step 3] Calculating the collocations..."
-    # fetch_collocations()
-    # # Step 4
-    # print "[Step 4] Fetching the keywords..."
-    # fetch_keywords()
+    # # Step 1
+    print "[Step 1] Fetching documents headers..."
+    fetch_docs()
+    # # Step 2
+    print "[Step 2] Fetching and processing abstracts..."
+    fetch_abstracts()
+    # # Step 3
+    print "[Step 3] Calculating the collocations..."
+    fetch_collocations()
+    # Step 4
+    print "[Step 4] Fetching the keywords..."
+    fetch_keywords()
     # Step 5
-    # print "[Step 5] Fetching collocation ocurrences..."
-    # fetch_collocations_ni()
+    print "[Step 5] Fetching collocation ocurrences..."
+    fetch_collocations_ni()
     # Step 6
-    # print "[Step 6] Fetching nouns..."
-    # fetch_nouns()
+    print "[Step 6] Fetching nouns..."
+    fetch_nouns()
     # Step 7
-    # print "[Step 7] Generating Vocabulary..."
-    # fetch_vocabulary()
+    print "[Step 7] Generating Vocabulary..."
+    fetch_vocabulary()
     # Step 8
-    # print "[Step 8] Generating Files..."
-    # generate_files()
-    # # Step 9
+    print "[Step 8] Generating Files..."
+    generate_files()
+    # Step 9
     print "[Step 9] Generating Matrix..."
     generate_matrix()

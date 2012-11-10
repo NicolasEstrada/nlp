@@ -17,6 +17,7 @@ years = ["00", "01", "02", "03", "04", "05", "06",
 base_path = "nipstxt/"
 idx_path = base_path + "idx/"
 voc_path = "voctxt/"
+nips_path = "nips/"
 doc_columns = ["ID", "title", "year", "authors"]
 abs_columns = ["ID", "year", "abstract"]
 coll_columns = ["ID", "year", "collocation"]
@@ -231,7 +232,7 @@ def fetch_vocabulary():
                 list(set(post_rows)))
 
 
-def generate_matrix():
+def generate_files():
 
     for year in years:
         posts = db.query(
@@ -245,6 +246,67 @@ def generate_matrix():
                 except UnicodeEncodeError:
                     # Omit weird characters (are few)
                     pass
+
+
+def generate_matrix():
+    for year in years:
+        print "processing year 20" + str(year)
+        vocx = open(voc_path + "voc" + year + ".txt", "r")
+        entries = []
+        with vocx:
+            document = vocx.read()
+            lines = document.split('\n')
+            for line in lines:
+                try:
+                    term, ID = line.split(' ')
+                    entries.append((term, ID))
+                except ValueError:
+                    # Skip empty lines
+                    pass
+
+        terms = [entry[0] for entry in entries]
+        terms = list(set(terms))
+        docs = [entry[1] for entry in entries]
+        docs = list(set(docs))
+
+        n_terms = len(terms)
+        n_docs = len(docs)
+
+        matrix = [[0 for x in xrange(n_terms)] for x in xrange(n_docs)]
+
+        for x in xrange(0, n_terms):
+            for y in xrange(0, n_docs):
+                try:
+                    matrix[y][x] = 0
+                except IndexError:
+                    print "x,y", x, y
+                    print "len: terms ", len(terms), "docs ", len(docs)
+
+        for entry in entries:
+            matrix[docs.index(entry[1])][terms.index(entry[0])] += 1
+
+        rlabel = open(nips_path + "nips" + year + ".mat.rlabel", "w+")
+        with rlabel:
+            for doc in docs:
+                rlabel.write(str(doc) + "\n")
+
+        clabel = open(nips_path + "nips" + year + ".mat.clabel", "w+")
+        with clabel:
+            for doc in terms:
+                clabel.write(str(doc) + "\n")
+
+        nipsx = open(nips_path + "nips" + year + ".mat", "w+")
+
+        with nipsx:
+            # for doc in docs:
+            #     current_terms = filter(lambda x: x[1] == doc, entries)
+            #     for term in terms:
+            #         nipsx.write("1," if term in current_terms else "0,")
+
+            for x in xrange(0, n_terms):
+                for y in xrange(0, n_docs):
+                    nipsx.write(str(matrix[y][x]) + ",")
+                nipsx.write("\n")
 
 
 if __name__ == "__main__":
@@ -270,5 +332,8 @@ if __name__ == "__main__":
     # print "[Step 7] Generating Vocabulary..."
     # fetch_vocabulary()
     # Step 8
-    print "[Step 8] Generating Matrix..."
+    # print "[Step 8] Generating Files..."
+    # generate_files()
+    # # Step 9
+    print "[Step 9] Generating Matrix..."
     generate_matrix()

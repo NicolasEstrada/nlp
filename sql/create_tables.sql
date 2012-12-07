@@ -51,6 +51,13 @@ CREATE TABLE IF NOT EXISTS Posteo(
 	year INT,
 	keyword VARCHAR(32));
 
+CREATE TABLE IF NOT EXISTS Cluster(
+	year INT,
+	k INT,
+	cluster_ID INT,
+	des_keywords TEXT,
+	dis_keywords TEXT);
+
 # Index for tables.
  alter table Document add unique index (ID, year);
  alter table Abstract add unique index (ID, year);

@@ -1,0 +1,57 @@
+********************************************************************************
+vcluster (CLUTO 2.1.2) Copyright 2001-06, Regents of the University of Minnesota
+
+Matrix Information -----------------------------------------------------------
+  Name: /home/mestrada/devel/inf355/tarea1/nips/nips05.mat, #Rows: 914, #Columns: 918, #NonZeros: 839052
+
+Options ----------------------------------------------------------------------
+  CLMethod=Direct, CRfun=E1, SimFun=Cosine, #Clusters: 5
+  RowModel=None, ColModel=None, GrModel=SY-DIR, NNbrs=40
+  Colprune=1.00, EdgePrune=-1.00, VtxPrune=-1.00, MinComponent=5
+  CSType=Best, AggloFrom=0, AggloCRFun=E1, NTrials=10, NIter=10
+
+Solution ---------------------------------------------------------------------
+
+------------------------------------------------------------------------
+5-way clustering: [E1=2.65e+05] [914 of 914]
+------------------------------------------------------------------------
+cid  Size  ISim  ISdev   ESim  ESdev  | 
+------------------------------------------------------------------------
+  0   256 +0.181 +0.034 +0.130 +0.031 | 
+  1   158 +0.169 +0.030 +0.122 +0.032 | 
+  2   217 +0.170 +0.032 +0.125 +0.029 | 
+  3   205 +0.143 +0.032 +0.112 +0.033 | 
+  4    78 +0.097 +0.040 +0.068 +0.031 | 
+------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+5-way clustering solution - Descriptive & Discriminating Features...
+--------------------------------------------------------------------------------
+Cluster   0, Size:   256, ISim: 0.181, ESim: 0.130
+      Descriptive:  data  5.9%, learning  5.8%, algorithm  5.7%, model  5.6%, models  4.7% 
+   Discriminating:  data  8.6%, network  7.9%, networks  5.5%, algorithm  4.9%, system  4.7%
+
+Cluster   1, Size:   158, ISim: 0.169, ESim: 0.122
+      Descriptive:  recognition 13.9%, network  7.7%, system  4.8%, performance  4.6%, speech  3.7% 
+   Discriminating:  recognition 26.6%, speech  8.5%, learning  6.8%, performance  4.0%, networks  2.9%
+
+Cluster   2, Size:   217, ISim: 0.170, ESim: 0.125
+      Descriptive:  networks 10.8%, learning  8.5%, network  7.6%, function  4.5%, functions  3.8% 
+   Discriminating:  models  7.0%, model  6.2%, recognition  5.9%, function  5.3%, functions  5.0%
+
+Cluster   3, Size:   205, ISim: 0.143, ESim: 0.112
+      Descriptive:  model  9.6%, network  7.2%, system  4.8%, networks  4.2%, processing  3.7% 
+   Discriminating:  neurons  5.5%, algorithm  5.2%, model  5.0%, learning  4.7%, processing  3.7%
+
+Cluster   4, Size:    78, ISim: 0.097, ESim: 0.068
+      Descriptive:  learning 21.9%, networks 10.7%, control  7.1%, image  5.1%, neural  4.0% 
+   Discriminating:  learning  7.0%, model  4.8%, control  4.5%, algorithm  4.0%, image  3.5%
+--------------------------------------------------------------------------------
+
+Timing Information -----------------------------------------------------------
+   I/O:                                   0.100 sec
+   Clustering:                            2.508 sec
+   Reporting:                             0.052 sec
+Memory Usage Information -----------------------------------------------------
+   Maximum memory used:                13615104 bytes
+   Current memory used:                 6828312 bytes
+********************************************************************************

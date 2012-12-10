@@ -1,0 +1,42 @@
+********************************************************************************
+vcluster (CLUTO 2.1.2) Copyright 2001-06, Regents of the University of Minnesota
+
+Matrix Information -----------------------------------------------------------
+  Name: /home/mestrada/devel/inf355/tarea1/nips/nips06.mat, #Rows: 915, #Columns: 1023, #NonZeros: 936045
+
+Options ----------------------------------------------------------------------
+  CLMethod=Direct, CRfun=E1, SimFun=Cosine, #Clusters: 2
+  RowModel=None, ColModel=None, GrModel=SY-DIR, NNbrs=40
+  Colprune=1.00, EdgePrune=-1.00, VtxPrune=-1.00, MinComponent=5
+  CSType=Best, AggloFrom=0, AggloCRFun=E1, NTrials=10, NIter=10
+
+Solution ---------------------------------------------------------------------
+
+------------------------------------------------------------------------
+2-way clustering: [E1=2.80e+05] [915 of 915]
+------------------------------------------------------------------------
+cid  Size  ISim  ISdev   ESim  ESdev  | 
+------------------------------------------------------------------------
+  0   560 +0.151 +0.035 +0.105 +0.031 | 
+  1   355 +0.110 +0.033 +0.105 +0.038 | 
+------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+2-way clustering solution - Descriptive & Discriminating Features...
+--------------------------------------------------------------------------------
+Cluster   0, Size:   560, ISim: 0.151, ESim: 0.105
+      Descriptive:  learning  8.5%, networks  6.5%, network  5.1%, algorithm  4.7%, model  3.0% 
+   Discriminating:  algorithm  6.3%, processing  6.3%, learning  6.2%, system  6.2%, recognition  4.8%
+
+Cluster   1, Size:   355, ISim: 0.110, ESim: 0.105
+      Descriptive:  network  7.2%, model  5.8%, system  5.6%, recognition  4.7%, networks  4.3% 
+   Discriminating:  algorithm  6.3%, processing  6.3%, learning  6.2%, system  6.2%, recognition  4.8%
+--------------------------------------------------------------------------------
+
+Timing Information -----------------------------------------------------------
+   I/O:                                   0.120 sec
+   Clustering:                            0.812 sec
+   Reporting:                             0.060 sec
+Memory Usage Information -----------------------------------------------------
+   Maximum memory used:                15179776 bytes
+   Current memory used:                 7610312 bytes
+********************************************************************************

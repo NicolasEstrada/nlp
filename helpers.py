@@ -229,6 +229,8 @@ def split_index(line):
 
 def keyword_wrapper(input_file, year):
     """ This function returns a generator for
+            counter +=1
+            cluster.append(cluster_id)
     each document on the input file.
     """
     import re
@@ -261,36 +263,37 @@ def keyword_wrapper(input_file, year):
 Simulated annealing 91,149,594,602
 """
 
-def log_wrapper(input_file):
+
+def cluster_wrapper(input_file):
     """ This function returns a generator for
     each document on the input file.
     """
     counter = 0
     cluster = []
     for line in input_file:
-        if "Cluster" in line:
-            cluster_id = int(line[10])
-            counter +=1
-            cluster.append(cluster_id)
-        if "Descriptive" in line:
-            cluster_id = int(line[10])
-            counter +=1
-        if "Discriminating" in line:
-            cluster_id = int(line[10])
-            counter +=1
+        if "Cluster   " in line:
+            print line[10]
+            cluster.append(int(line[10]))
+            counter += 1
+        if "Descriptive:  " in line:
+            # print line
+            cluster.append(line.split(":")[1])
+            counter += 1
+        if "Discriminating:  " in line:
+            # print line
+            cluster.append(line.split(":")[1])
+            counter += 1
 
         if counter == 3:
-            yield document
-            document = []
-            counter = 1
-            document.append(line)
-        else:
-            counter += 1
-            document.append(line)
+            # cluster = tuple(cluster)
+            print cluster
+            yield cluster
+            counter = 0
+            cluster = []
 
 # Example document description (4 lines)
 """
 1 Cluster   0, Size:   197, ISim: 0.226, ESim: 0.157
-2       Descriptive:  paper  7.8%, problem  7.3%, data  4.2%, network  4.0%, algorithm  3.9% 
+2       Descriptive:  paper  7.8%, problem  7.3%, data  4.2%, network  4.0%, algorithm  3.9%
 3    Discriminating:  problem 15.9%, paper  7.3%, problems  7.1%, network  6.0%, neurons  3.5%
 """
